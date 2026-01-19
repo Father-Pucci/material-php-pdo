@@ -1,76 +1,61 @@
 <?php
 require_once '../../config/config.php';
-requireRole('user');
+requireRole('manager');
 
-// Get current user details
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+// Get statistics for manager
+$stmt = $pdo->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
+$totalUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-renderHeader('User Dashboard');
+$stmt = $pdo->query("SELECT COUNT(*) as total FROM users WHERE role = 'user' AND is_verified = 0");
+$unverifiedUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+$title = 'Manager Dashboard';
+renderHeader($title);
 ?>
 
-<div class="nav">
-    <a href="<?php echo BASE_URL; ?>/app/users/user-view.php?user_id=<?php echo $_SESSION['user_id']; ?>">My Profile</a>
-    <a href="<?php echo BASE_URL; ?>/app/auth/signout.php">Logout</a>
+<div class="card">
+    <h2>Welcome, Manager!</h2>
+    <p style="color: #666; margin-top: 10px;">You can manage regular users and oversee team activities.</p>
 </div>
 
-<h1>User Dashboard</h1>
+<h2>User Statistics</h2>
 
-<div class="info-box">
-    <strong>Welcome, <?php echo htmlspecialchars($_SESSION['email']); ?></strong><br>
-    Role: <span class="badge badge-user">User</span>
+<div class="stat-cards">
+    <div class="stat-card" style="border-left: 4px solid #66bb6a;">
+        <h3><?php echo $totalUsers; ?></h3>
+        <p>Total Users</p>
+    </div>
+    <div class="stat-card" style="border-left: 4px solid #bdbdbd;">
+        <h3><?php echo $unverifiedUsers; ?></h3>
+        <p>Unverified Users</p>
+    </div>
 </div>
 
-<h2>Your Account Information</h2>
-
-<table>
-    <tr>
-        <th style="width: 200px;">Email:</th>
-        <td><?php echo htmlspecialchars($currentUser['email']); ?></td>
-    </tr>
-    <tr>
-        <th>Account Status:</th>
-        <td>
-            <span class="badge badge-<?php echo $currentUser['is_verified'] ? 'verified' : 'unverified'; ?>">
-                <?php echo $currentUser['is_verified'] ? 'Verified' : 'Unverified'; ?>
-            </span>
-        </td>
-    </tr>
-    <tr>
-        <th>Member Since:</th>
-        <td><?php echo date('F j, Y', strtotime($currentUser['created_at'])); ?></td>
-    </tr>
-</table>
-
-<h2>User Capabilities:</h2>
-<ul>
-    <li><strong>View Profile:</strong> Access your personal information</li>
-    <li><strong>Update Profile:</strong> Change your email and password (via admin/manager)</li>
-    <li><strong>Basic Access:</strong> Use application features</li>
-    <li><strong>Restrictions:</strong>
-        <ul style="margin-top: 5px;">
-            <li>Cannot manage other users</li>
-            <li>Cannot change own role</li>
-            <li>Cannot delete own account</li>
-            <li>No administrative access</li>
-        </ul>
-    </li>
-</ul>
-
-<h2>Access Hierarchy</h2>
-<div class="info-box">
-    <strong>Admin → Full Control</strong><br>
-    ↓ Manages Managers<br>
-    <strong>Manager → Limited Control</strong><br>
-    ↓ Manages you<br>
-    <strong>User (You) → View Only</strong><br>
-    ↓ Can only view own profile
+<div class="card">
+    <h2>Manager Capabilities</h2>
+    <ul style="margin: 15px 0 0 20px; line-height: 1.8;">
+        <li><strong>Manage Users:</strong> Create, edit, and delete regular users only</li>
+        <li><strong>View Reports:</strong> Access user data and analytics</li>
+        <li><strong>Team Management:</strong> Oversee user activities</li>
+        <li><strong>Restrictions:</strong>
+            <ul style="margin-top: 5px;">
+                <li>Cannot manage Admins or other Managers</li>
+                <li>Cannot delete own account</li>
+                <li>Cannot change own role</li>
+            </ul>
+        </li>
+    </ul>
 </div>
 
-<div class="info-box" style="background: #fff3cd; border-left-color: #ffc107; margin-top: 20px;">
-    <strong>Need help?</strong><br>
-    Contact your manager or administrator to update your profile or request changes.
+<div class="card">
+    <h2>Access Hierarchy</h2>
+    <div style="padding: 15px; background: #f5f5f5; border-radius: 4px;">
+        <strong style="color: #ef5350;">Admin → Full Control</strong><br>
+        <span style="margin-left: 20px;">↓ Manages you</span><br>
+        <strong style="color: #ffa726;">Manager (You) → Limited Control</strong><br>
+        <span style="margin-left: 20px;">↓ Can manage Users only</span><br>
+        <strong style="color: #66bb6a;">User → No Management Rights</strong>
+    </div>
 </div>
 
 <?php renderFooter(); ?>

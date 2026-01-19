@@ -355,4 +355,3 @@ function renderFooter() {
     </html>
     <?php
 }
-
