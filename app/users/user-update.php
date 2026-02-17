@@ -104,8 +104,7 @@ renderHeader('Update User');
             <label for="role">Role:</label>
             <select id="role" name="role">
                 <option value="user" <?php echo $user['role'] === 'user' ? 'selected' : ''; ?>>User</option>
-                <option value="manager" <?php echo $user['role'] === 'manager' ? 'selected' : ''; ?>>Manager</option>
-                <option value="admin" <?php echo $user['role'] === 'admin' ? 'selected' : ''; ?>>Admin</option>
+                
             </select>
         </div>
         

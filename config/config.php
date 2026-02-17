@@ -3,7 +3,7 @@ session_start();
 
 // Email configuration (for verification)
 define('MAIL_FROM', 'noreply@yourdomain.com');
-define('BASE_URL', 'http://localhost/php-pdo');
+define('BASE_URL', 'http://localhost/rasonabe-php-monitoring');
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'sample_php_pdo');
